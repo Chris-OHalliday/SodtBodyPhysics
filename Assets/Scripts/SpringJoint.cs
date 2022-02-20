@@ -8,11 +8,11 @@ public class SpringJoint : MonoBehaviour
     public MassPoint massPointA;
     public MassPoint massPointB;
 
-    [Range(0.0f,1.0f)]
+    [Range(0.0f, 100.0f)]
     public float springStiffness;
-    [Range(0.0f, 1.0f)]
+    [Range(0.0f, 100.0f)]
     public float springRestLength;
-    [Range(0.0f, 1.0f)]
+    [Range(0.0f, 100.0f)]
     public float springDampingFactor;
 
     private Vector3 forceA;
@@ -28,18 +28,21 @@ public class SpringJoint : MonoBehaviour
         Vector3 massPointVelocityDiff = (massPointB.velocityVector - massPointA.velocityVector);
 
         float massPointLengthDiff = massPointVectorDiff.magnitude;
+        if (massPointVectorDiff.magnitude != 0)
+        {
 
-        float differenceFromRestLength = massPointLengthDiff - springRestLength;
+            float differenceFromRestLength = massPointLengthDiff - springRestLength;
 
-        float springForce = -springStiffness * springRestLength;
-        //float springForce = springStiffness * springRestLength;
+            float springForce = springStiffness * springRestLength;
+            //float springForce = -springStiffness * springRestLength;
 
-        float dampingForce = Vector3.Dot((massPointVectorDiff / massPointLengthDiff), massPointVelocityDiff) * springDampingFactor;
+            float dampingForce = Vector3.Dot((massPointVectorDiff / massPointLengthDiff), massPointVelocityDiff) * springDampingFactor;
 
-        float totalSpringForce = springForce + dampingForce;
+            float totalSpringForce = springForce + dampingForce;
 
-        massPointA.forceVector += totalSpringForce * massPointVectorDiff.normalized;
-        massPointB.forceVector += totalSpringForce * massPointVectorDiff2.normalized;
+            massPointA.ApplyForce(totalSpringForce * massPointVectorDiff.normalized);
+            massPointB.ApplyForce(totalSpringForce * massPointVectorDiff2.normalized);
+        }
 
     }
 

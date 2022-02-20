@@ -15,16 +15,26 @@ public class MassPoint : MonoBehaviour
 
     private void Start()
     {
-        gravityVector = new Vector3(0, 0, 0)*mass;
+        gravityVector = new Vector3(0, 0f, 0) * mass;
     }
 
     // Update is called once per frame
     void Update()
     {
-        forceVector = Vector3.zero;
-        Vector3 forcetoAdd = gravityVector;
-        forceVector += forcetoAdd;
-        velocityVector += (forceVector * Time.deltaTime) / mass;
+        ApplyForce(gravityVector);
+        velocityVector += forceVector * (Time.deltaTime / mass);
         transform.position += velocityVector * Time.deltaTime;
     }
+
+    private void LateUpdate()
+    {        
+        forceVector = Vector3.zero;
+    }
+
+    public void ApplyForce(Vector3 force)
+    {
+        forceVector += force;
+    }
+
+
 }
