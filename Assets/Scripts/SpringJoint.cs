@@ -15,9 +15,11 @@ public class SpringJoint : MonoBehaviour
     [Range(0.0f, 100.0f)]
     public float springDampingFactor;
 
-    private Vector3 forceA;
-    private Vector3 forceB;
 
+    private void Start()
+    {
+        springRestLength = (massPointB.transform.position - massPointA.transform.position).magnitude;
+    }
 
     // Update is called once per frame
     void Update()
@@ -33,7 +35,7 @@ public class SpringJoint : MonoBehaviour
 
             float differenceFromRestLength = massPointLengthDiff - springRestLength;
 
-            float springForce = springStiffness * springRestLength;
+            float springForce = springStiffness * differenceFromRestLength;
             //float springForce = -springStiffness * springRestLength;
 
             float dampingForce = Vector3.Dot((massPointVectorDiff / massPointLengthDiff), massPointVelocityDiff) * springDampingFactor;
@@ -46,16 +48,6 @@ public class SpringJoint : MonoBehaviour
 
     }
 
-    public Vector3 GetForceForA()
-    {
-
-        return forceA;
-    }  
-
-    public Vector3 GetForceForB()
-    {
-        return forceB;
-    }
 
 
 }

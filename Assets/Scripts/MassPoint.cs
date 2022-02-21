@@ -34,7 +34,6 @@ public class MassPoint : MonoBehaviour
     public void ApplyForce(Vector3 force)
     {
         forceVector += force;
-    }
-
+    } 
 
 }
