@@ -48,6 +48,11 @@ public class SpringJoint : MonoBehaviour
 
     }
 
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(massPointA.transform.position, massPointB.transform.position);
+    }
 
 
 }
