@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MassPoint : MonoBehaviour
+public class MassPoint:MonoBehaviour
 {
     
     public Vector3 velocityVector;
     public Vector3 forceVector;
     public Vector3 gravityVector;
+    public Vector3 positionVector;
     public SpringJoint springJoint;
 
     [Range(0.0f, 1.0f)]
@@ -23,7 +24,7 @@ public class MassPoint : MonoBehaviour
     {
         ApplyForce(gravityVector);
         velocityVector += forceVector * (Time.deltaTime / mass);
-        transform.position += velocityVector * Time.deltaTime;
+        positionVector += velocityVector * Time.deltaTime;
     }
 
     private void LateUpdate()

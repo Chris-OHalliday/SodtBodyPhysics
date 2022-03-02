@@ -18,15 +18,15 @@ public class SpringJoint : MonoBehaviour
 
     private void Start()
     {
-        springRestLength = (massPointB.transform.position - massPointA.transform.position).magnitude;
+        springRestLength = (massPointB.positionVector - massPointA.positionVector).magnitude;
     }
 
     // Update is called once per frame
     void Update()
     {
 
-        Vector3 massPointVectorDiff = (massPointB.transform.position - massPointA.transform.position);
-        Vector3 massPointVectorDiff2 = (massPointA.transform.position - massPointB.transform.position);
+        Vector3 massPointVectorDiff = (massPointB.positionVector - massPointA.positionVector);
+        Vector3 massPointVectorDiff2 = (massPointA.positionVector - massPointB.positionVector);
         Vector3 massPointVelocityDiff = (massPointB.velocityVector - massPointA.velocityVector);
 
         float massPointLengthDiff = massPointVectorDiff.magnitude;
@@ -51,7 +51,7 @@ public class SpringJoint : MonoBehaviour
     void OnDrawGizmos()
     {
         Gizmos.color = Color.blue;
-        Gizmos.DrawLine(massPointA.transform.position, massPointB.transform.position);
+        Gizmos.DrawLine(massPointA.positionVector, massPointB.positionVector);
     }
 
 
