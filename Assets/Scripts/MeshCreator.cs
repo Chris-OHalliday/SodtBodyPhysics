@@ -27,7 +27,11 @@ public class MeshCreator : MonoBehaviour
             forceVector += force;
         }
 
+
     };
+
+
+    private int CUBESIZE = 5;
 
     Mesh mesh;
     public Vector3[] vertices;
@@ -66,11 +70,14 @@ public class MeshCreator : MonoBehaviour
     void CreateCubeMesh()
     {
 
+        int cornerVertices = 8;
+        int edgeVertices = (CUBESIZE + CUBESIZE + CUBESIZE - 3) * 4;
+
         vertices = new Vector3[]
         {
             new Vector3(0,0,0),
-            new Vector3(0,1,0),
-            new Vector3(1,0,0)
+            new Vector3(0,1f,0),
+            new Vector3(1f,0,0)
         };
         
         masses = new MassPointstruct[vertices.Length];
@@ -84,7 +91,7 @@ public class MeshCreator : MonoBehaviour
         {
             masses[i].positionVector = vertices[i];
             masses[i].mass = 1;
-            masses[i].gravityVector = new Vector3(0, -0.5f, 0) * masses[i].mass;
+            masses[i].gravityVector = new Vector3(0, -0.0f, 0) * masses[i].mass;
         }
     }
 
@@ -98,6 +105,19 @@ public class MeshCreator : MonoBehaviour
         }
         mesh.triangles = triangles;
         mesh.RecalculateNormals();
+    }
+
+    //visual
+    private void OnDrawGizmos()
+    {
+        if (masses != null)
+        {
+            Gizmos.color = Color.blue;
+            for (int i = 0; i < masses.Length; i++)
+            {
+                Gizmos.DrawSphere(masses[i].positionVector, 0.01f);
+            }
+        }
     }
 
 
