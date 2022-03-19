@@ -5,40 +5,27 @@ using UnityEngine;
 
 public class MeshCreator : MonoBehaviour
 {
-    const int subdivisions = 4;
-    const float VERTEXSPACE = 1 / subdivisions;
-    public struct MassPointstruct {
 
-        public Vector3 velocityVector;
-        public Vector3 forceVector;
-        public Vector3 gravityVector;
-        public Vector3 positionVector;
-        public float mass;
+    private struct TriangleIndices
+    {
+        public int vertex1;
+        public int vertex2;
+        public int vertex3;
 
-        public void massAccumulation()
+        public TriangleIndices(int vertex1, int vertex2, int vertex3)
         {
-            ApplyForce(gravityVector);
-            velocityVector += forceVector * (Time.deltaTime / mass);
-            positionVector += velocityVector * Time.deltaTime;
+            this.vertex1 = vertex1;
+            this.vertex2 = vertex2;
+            this.vertex3 = vertex3;
         }
-
-        public void ApplyForce(Vector3 force)
-        {
-            forceVector += force;
-        }
-
-
-    };
-
-
-    private int CUBESIZE = 5;
+    }
 
     Mesh mesh;
-    public Vector3[] vertices;
-    public MassPointstruct[] masses;
-    //public MassPoint[] massPoints;
-    public SpringJoint[] springJoints;
-    int[] triangles;
+    [SerializeField] private List<Vector3> vertices;
+    private List<TriangleIndices> triangles = new List<TriangleIndices>();
+    List<int> holder = new List<int>();
+    public Vector3[] meshvertices;
+    int[] meshtriangles;
 
 
 
@@ -46,79 +33,149 @@ public class MeshCreator : MonoBehaviour
     {
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
+        mesh.name = "subdividedCube";
         CreateCubeMesh();
     }
 
     // Update is called once per frame
     void Update()
     {
-        for (int i = 0; i < masses.Length; i++)
-        {
-            masses[i].massAccumulation();
-        }
-        UpdateMesh();
-    }
 
-    private void LateUpdate()
-    {
-        for (int i = 0; i < masses.Length; i++)
-        {
-            masses[i].forceVector = Vector3.zero;
-        }
     }
 
     void CreateCubeMesh()
     {
 
-        int cornerVertices = 8;
-        int edgeVertices = (CUBESIZE + CUBESIZE + CUBESIZE - 3) * 4;
+        //int cornerVertices = 8;
+        //int edgeVertices = (CUBESIZE + CUBESIZE + CUBESIZE - 3) * 4;
 
-        vertices = new Vector3[]
+        for (float y = 0f; y < 1.2f; y += 0.2f)
         {
-            new Vector3(0,0,0),
-            new Vector3(0,1f,0),
-            new Vector3(1f,0,0)
-        };
-        
-        masses = new MassPointstruct[vertices.Length];
+            //print("y" + y);
+            for (float x = 0f; x < 1.2f; x += 0.2f)
+            {
+                //print("X" + x);
+                for (float z = 0f; z < 1.2f; z += 0.2f)
+                {
+                    vertices.Add(new Vector3(x, y, z));
+                }
+            }
 
-        triangles = new int[] 
-        { 
-            0,1,2
-        };
-
-        for (int i = 0; i < vertices.Length; i++)
-        {
-            masses[i].positionVector = vertices[i];
-            masses[i].mass = 1;
-            masses[i].gravityVector = new Vector3(0, -0.0f, 0) * masses[i].mass;
         }
+
+        meshvertices = vertices.ToArray();
+
+        int indexCounter = 0;
+
+        //front
+        for (int i = 0; i < vertices.Count - 42; i+= 6)
+        {
+            if (indexCounter == 5)
+            {
+                indexCounter = 0;
+            }
+            else
+            {
+                triangles.Add(new TriangleIndices(i, i + 36, i + 6));
+                triangles.Add(new TriangleIndices(i + 36, i + 42, i + 6));
+                indexCounter++;
+            }
+            
+        }
+
+        int indexCounter2 = 0;
+        //bottom
+        for (int i = 1; i < 31; i++)
+        {
+            if (indexCounter2 == 5)
+            {
+                indexCounter2 = 0;
+            }
+            else
+            {
+                triangles.Add(new TriangleIndices(i, i - 1, i + 6));
+                triangles.Add(new TriangleIndices(i-1,i+5,i+6));
+                indexCounter2++;
+            }
+        }
+
+        print(triangles.Count);
+
+        foreach (var tri in triangles)
+        {
+            holder.Add(tri.vertex1);
+            holder.Add(tri.vertex2);
+            holder.Add(tri.vertex3);
+        }
+
+        meshtriangles = holder.ToArray();
+        //meshvertices = new Vector3[]
+        //{
+        //    //front
+        //    new Vector3(0,0,0), //0
+        //    new Vector3(0,0.2f,0), //1
+        //    new Vector3(0.2f,0,0), //2 
+        //    new Vector3(0.2f,0.2f,0), //3
+
+        //    //back
+        //    new Vector3(0,0,0.2f), //4 
+        //    new Vector3(0,0.2f,0.2f), //5
+        //    new Vector3(0.2f,0,0.2f), //6 
+        //    new Vector3(0.2f,0.2f,0.2f) //7
+        //};
+
+        //triangles = new int[]
+        //{ 
+        //    //front
+        //    0,1,2,
+        //    1,3,2,
+
+        //    //right
+        //    2,3,6,
+        //    3,7,6,
+
+        //    //back
+        //    6,7,4,
+        //    7,5,4,
+
+        //    //left
+        //    4,5,0,
+        //    5,1,0,
+
+        //    //top
+        //    1,5,3,
+        //    5,7,3,
+
+        //    //bottom
+        //    4,0,6,
+        //    0,2,6
+
+        //};
+
+        UpdateMesh();
     }
 
     private void UpdateMesh()
     {
         mesh.Clear();
-        mesh.vertices = vertices;
-        for (int i = 0; i < vertices.Length; i++)
-        {
-            vertices[i] = masses[i].positionVector;
-        }
-        mesh.triangles = triangles;
+        mesh.vertices = meshvertices;
+        mesh.triangles = meshtriangles;
         mesh.RecalculateNormals();
     }
 
-    //visual
     private void OnDrawGizmos()
     {
-        if (masses != null)
+        Gizmos.color = Color.blue;
+        for (int i = 0; i < meshvertices.Length; i++)
         {
-            Gizmos.color = Color.blue;
-            for (int i = 0; i < masses.Length; i++)
-            {
-                Gizmos.DrawSphere(masses[i].positionVector, 0.01f);
-            }
+            Gizmos.DrawSphere(vertices[i], 0.05f);
         }
+
+        Gizmos.color = Color.red;
+        for (int i = 0; i < meshtriangles.Length - 1 ; i++)
+        {
+            Gizmos.DrawLine(vertices[meshtriangles[i]], meshvertices[meshtriangles[i+1]]);
+        }
+
     }
-
-
 }

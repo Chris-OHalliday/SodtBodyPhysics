@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpringJoint : MonoBehaviour
+public class SpringJoint: MonoBehaviour
 {
 
     public MassPoint massPointA;
-    public MassPoint massPointB;
+    public MassPoint massPointB; 
+    //public MeshCreator.MassPointstruct massPointA;
+    //public MeshCreator.MassPointstruct massPointB;
 
     [Range(0.0f, 100.0f)]
     public float springStiffness;
@@ -18,15 +20,15 @@ public class SpringJoint : MonoBehaviour
 
     private void Start()
     {
-        springRestLength = (massPointB.positionVector - massPointA.positionVector).magnitude;
+        springRestLength = (massPointB.transform.position - massPointA.transform.position).magnitude;
     }
 
     // Update is called once per frame
     void Update()
     {
 
-        Vector3 massPointVectorDiff = (massPointB.positionVector - massPointA.positionVector);
-        Vector3 massPointVectorDiff2 = (massPointA.positionVector - massPointB.positionVector);
+        Vector3 massPointVectorDiff = (massPointB.transform.position - massPointA.transform.position);
+        Vector3 massPointVectorDiff2 = (massPointA.transform.position - massPointB.transform.position);
         Vector3 massPointVelocityDiff = (massPointB.velocityVector - massPointA.velocityVector);
 
         float massPointLengthDiff = massPointVectorDiff.magnitude;
@@ -51,7 +53,7 @@ public class SpringJoint : MonoBehaviour
     void OnDrawGizmos()
     {
         Gizmos.color = Color.blue;
-        Gizmos.DrawLine(massPointA.positionVector, massPointB.positionVector);
+        Gizmos.DrawLine(massPointA.transform.position, massPointB.transform.position);
     }
 
 
