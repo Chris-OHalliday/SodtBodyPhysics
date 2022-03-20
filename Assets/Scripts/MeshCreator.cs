@@ -40,7 +40,11 @@ public class MeshCreator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        //for (int i = 0; i < meshvertices.Length; i++)
+        //{
+        //    meshvertices[i] -= new Vector3(0, 0.2f, 0) * Time.deltaTime;
+        //}
+        UpdateMesh();
     }
 
     void CreateCubeMesh()
@@ -84,8 +88,8 @@ public class MeshCreator : MonoBehaviour
         }
 
         int indexCounter2 = 0;
-        //bottom
-        for (int i = 1; i < 31; i++)
+        //back
+        for (int i = 5; i < vertices.Count -42 ; i+=6)
         {
             if (indexCounter2 == 5)
             {
@@ -93,9 +97,65 @@ public class MeshCreator : MonoBehaviour
             }
             else
             {
+                triangles.Add(new TriangleIndices(i , i + 6, i + 36));
+                triangles.Add(new TriangleIndices(i + 6, i + 42, i + 36));
+                indexCounter2++;
+            }
+        }   
+
+
+        //right
+        for (int i = 30; i < vertices.Count - 37; i+= 36)
+        {
+            for (int j = i; j < i+5; j++)
+            {
+                    triangles.Add(new TriangleIndices(j, j + 36, j + 1));
+                    triangles.Add(new TriangleIndices(j + 36, j + 37, j + 1));
+
+            }
+        }
+              
+        //left
+        for (int i = 0; i < 185- 37; i+= 36)
+        {
+            for (int j = i; j < i+5; j++)
+            {
+                    triangles.Add(new TriangleIndices(j, j + 1, j + 37));
+                    triangles.Add(new TriangleIndices(j + 37, j + 36, j));
+
+            }
+        }
+
+
+        int indexCounter3 = 0;
+        //bottom
+        for (int i = 1; i < 31; i++)
+        {
+            if (indexCounter3 == 5)
+            {
+                indexCounter3 = 0;
+            }
+            else
+            {
                 triangles.Add(new TriangleIndices(i, i - 1, i + 6));
                 triangles.Add(new TriangleIndices(i-1,i+5,i+6));
-                indexCounter2++;
+                indexCounter3++;
+            }
+        }     
+        
+        int indexCounter4 = 0;
+        //top
+        for (int i = 180; i < vertices.Count - 7; i++)
+        {
+            if (indexCounter4 == 5)
+            {
+                indexCounter4 = 0;
+            }
+            else
+            {
+                triangles.Add(new TriangleIndices(i, i + 1, i + 6));
+                triangles.Add(new TriangleIndices(i+1,i+7,i+6));
+                indexCounter4++;
             }
         }
 
@@ -152,7 +212,7 @@ public class MeshCreator : MonoBehaviour
 
         //};
 
-        UpdateMesh();
+        
     }
 
     private void UpdateMesh()
@@ -171,11 +231,28 @@ public class MeshCreator : MonoBehaviour
             Gizmos.DrawSphere(vertices[i], 0.05f);
         }
 
-        Gizmos.color = Color.red;
-        for (int i = 0; i < meshtriangles.Length - 1 ; i++)
-        {
-            Gizmos.DrawLine(vertices[meshtriangles[i]], meshvertices[meshtriangles[i+1]]);
-        }
+        //Gizmos.color = Color.red;
+        //for (int i = 0; i < meshtriangles.Length - 1 ; i++)
+        //{
+        //    Gizmos.DrawLine(vertices[meshtriangles[i]], meshvertices[meshtriangles[i+1]]);
+        //}
 
     }
 }
+
+
+//int indexCounter3 = 0;
+////right
+//for (int i = 30; i < vertices.Count - 37; i++)
+//{
+//    if (indexCounter3 == 5)
+//    {
+//        indexCounter3 = 0;
+//    }
+//    else
+//    {
+//        triangles.Add(new TriangleIndices(i, i + 36, i + 1));
+//        triangles.Add(new TriangleIndices(i + 36, i + 37, i + 1));
+//        indexCounter3++;
+//    }
+//}

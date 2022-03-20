@@ -85,7 +85,7 @@ public class IcoSphereGenerator : MonoBehaviour
 
     void GenerateIcosphere()
     {
-        float t = (1.0f + Mathf.Sqrt(5.0f)) / 2.0f;
+        float t = (1.0f + Mathf.Sqrt(5.0f))/2.0f;
 
         AddVertex(new Vector3(-1, t, 0).normalized);
         AddVertex(new Vector3(1, t, 0).normalized);
