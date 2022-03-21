@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class MassPoint : MonoBehaviour
 {
-
-    //public Mesh objectMesh;
-    public Vector3 velocityVector;
-    public Vector3 forceVector;
+    
+    public MeshClass objectBody;
+    public Vector3[] velocityVector;
+    public Vector3[] forceVector;
     public Vector3 gravityVector;
-    //public Vector3[] positionVector;
+    public Vector3[] positionVector;
+    bool meshesGenerated = false;
     //public SpringJoint springJoint;
 
     [Range(0.0f, 1.0f)]
@@ -17,35 +18,66 @@ public class MassPoint : MonoBehaviour
 
     private void Start()
     {
-        gravityVector = new Vector3(0, 0f, 0) * mass;
+        if (GetComponent<MeshCreator>() != null)
+        {
+            objectBody = GetComponent<MeshCreator>();
+        }
+        else 
+        { 
+            objectBody = GetComponent<IcoSphereGenerator>();
+        }
+        gravityVector = new Vector3(0, -0.1f, 0) * mass;
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        ApplyForce(gravityVector);
-        velocityVector += forceVector * (Time.deltaTime / mass);
-        transform.position += velocityVector * Time.deltaTime;
-        //positionVector += velocityVector * Time.deltaTime;
+        if (!meshesGenerated)
+        {
+            meshesGenerated = true;
+            if (meshesGenerated)
+            {
+                velocityVector = new Vector3[objectBody.numOfVertices];
+                positionVector = new Vector3[objectBody.numOfVertices];
+                forceVector = new Vector3[objectBody.numOfVertices];
+            }
+        }
+
+        for (int i = 0; i < objectBody.numOfVertices; i++)
+        {
+            positionVector[i] = objectBody.meshvertices[i];
+            forceVector[i] += gravityVector;
+            velocityVector[i] += forceVector[i] * (Time.deltaTime / mass);
+            positionVector[i] += velocityVector[i] * Time.deltaTime;
+            objectBody.meshvertices[i] = positionVector[i];           
+        }
     }
 
     private void LateUpdate()
     {
-        forceVector = Vector3.zero;
+        for (int i = 0; i < objectBody.numOfVertices; i++)
+        {
+            forceVector[i] = Vector3.zero;
+        }
     }
 
     public void ApplyForce(Vector3 force)
     {
-        forceVector += force;
+        for (int i = 0; i < 2 ; i++)
+        {
+            forceVector[i] += force;
+        }
+
     }
 
-    //private void OnDrawGizmos()
-    //{
-    //     Gizmos.color = Color.blue;
-    //     for (int i = 0; i < positionVector.Length; i++)
-    //     {
-    //        Gizmos.DrawSphere(positionVector[i], 0.01f);
-    //     }
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        for (int i = 0; i < positionVector.Length; i++)
+        {
+            Gizmos.DrawSphere(positionVector[i], 0.01f);
+        }
 
-    //}
+    }
 }

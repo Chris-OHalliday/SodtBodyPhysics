@@ -29,7 +29,7 @@ public class SpringJoint: MonoBehaviour
 
         Vector3 massPointVectorDiff = (massPointB.transform.position - massPointA.transform.position);
         Vector3 massPointVectorDiff2 = (massPointA.transform.position - massPointB.transform.position);
-        Vector3 massPointVelocityDiff = (massPointB.velocityVector - massPointA.velocityVector);
+        Vector3 massPointVelocityDiff = (massPointB.velocityVector[0] - massPointA.velocityVector[0]);
 
         float massPointLengthDiff = massPointVectorDiff.magnitude;
         if (massPointVectorDiff.magnitude != 0)

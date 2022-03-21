@@ -2,27 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IcoSphereGenerator : MonoBehaviour
+public class IcoSphereGenerator : MeshClass
 {
-
-
 
     [Range(0.0f, 100.0f)]
     public int subdivisionLevel;
 
-    private struct TriangleIndices
-    {
-        public int vertex1;
-        public int vertex2;
-        public int vertex3;
+    //private struct TriangleIndices
+    //{
+    //    public int vertex1;
+    //    public int vertex2;
+    //    public int vertex3;
 
-        public TriangleIndices(int vertex1, int vertex2, int vertex3)
-        {
-            this.vertex1 = vertex1;
-            this.vertex2 = vertex2;
-            this.vertex3 = vertex3;
-        }
-    }
+    //    public TriangleIndices(int vertex1, int vertex2, int vertex3)
+    //    {
+    //        this.vertex1 = vertex1;
+    //        this.vertex2 = vertex2;
+    //        this.vertex3 = vertex3;
+    //    }
+    //}
 
     Mesh mesh;
     [SerializeField] private List<Vector3> vertices;
@@ -30,8 +28,8 @@ public class IcoSphereGenerator : MonoBehaviour
     List<int> holder = new List<int>();
     private Dictionary<long, int> middlePointIndexDict = new Dictionary<long, int>();
     private int indexer = 0;
-    public int[] meshtriangles;
-    private Vector3[] meshvertices;
+    //public int[] meshtriangles;
+    //private Vector3[] meshvertices;
 
     // Start is called before the first frame update
     void Start()
@@ -39,13 +37,14 @@ public class IcoSphereGenerator : MonoBehaviour
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
         mesh.name = "Icosphere";
-        GenerateIcosphere();
+        GenerateMesh();
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        UpdateMesh();
     }
 
     private int AddVertex(Vector3 newPoint)
@@ -83,7 +82,7 @@ public class IcoSphereGenerator : MonoBehaviour
     }
     
 
-    void GenerateIcosphere()
+    public override void GenerateMesh()
     {
         float t = (1.0f + Mathf.Sqrt(5.0f))/2.0f;
 
@@ -132,12 +131,12 @@ public class IcoSphereGenerator : MonoBehaviour
         RefineIcoSphere();
     }
 
-    void RefineIcoSphere()
+    private void RefineIcoSphere()
     {
         TriangleIndices tri;
         for (int i = 0; i < subdivisionLevel; i++)
         {
-          List<TriangleIndices> triangles2 = new List<TriangleIndices>();
+            List<TriangleIndices> triangles2 = new List<TriangleIndices>();
             for (int j = 0; j < triangles.Count; j++)
             {
                 tri = triangles[j];
@@ -145,7 +144,7 @@ public class IcoSphereGenerator : MonoBehaviour
                 int a = GetMidPoint(tri.vertex1, tri.vertex2);
                 int b = GetMidPoint(tri.vertex2, tri.vertex3);
                 int c = GetMidPoint(tri.vertex3, tri.vertex1);
-                
+
                 triangles2.Add(new TriangleIndices(tri.vertex1, a, c));
                 triangles2.Add(new TriangleIndices(tri.vertex2, b, a));
                 triangles2.Add(new TriangleIndices(tri.vertex3, c, b));
@@ -153,7 +152,7 @@ public class IcoSphereGenerator : MonoBehaviour
 
             }
 
-            print("triangles2" + triangles2);
+            //print("triangles2" + triangles2);
             triangles = triangles2;
         }
 
@@ -165,10 +164,14 @@ public class IcoSphereGenerator : MonoBehaviour
             holder.Add(triangle.vertex3);
         }
 
-        print("holder" + holder);
-
         meshvertices = vertices.ToArray();
         meshtriangles = holder.ToArray();
+        numOfVertices = meshvertices.Length;
+
+    }
+
+    public override void UpdateMesh()
+    {   
 
         mesh.Clear();
         mesh.vertices = meshvertices;

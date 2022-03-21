@@ -3,29 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class MeshCreator : MonoBehaviour
+public class MeshCreator : MeshClass
 {
 
-    private struct TriangleIndices
-    {
-        public int vertex1;
-        public int vertex2;
-        public int vertex3;
+    //private struct TriangleIndices
+    //{
+    //    public int vertex1;
+    //    public int vertex2;
+    //    public int vertex3;
 
-        public TriangleIndices(int vertex1, int vertex2, int vertex3)
-        {
-            this.vertex1 = vertex1;
-            this.vertex2 = vertex2;
-            this.vertex3 = vertex3;
-        }
-    }
+    //    public TriangleIndices(int vertex1, int vertex2, int vertex3)
+    //    {
+    //        this.vertex1 = vertex1;
+    //        this.vertex2 = vertex2;
+    //        this.vertex3 = vertex3;
+    //    }
+    //}
 
     Mesh mesh;
     [SerializeField] private List<Vector3> vertices;
     private List<TriangleIndices> triangles = new List<TriangleIndices>();
     List<int> holder = new List<int>();
-    public Vector3[] meshvertices;
-    int[] meshtriangles;
+    //public Vector3[] meshvertices;
+    //int[] meshtriangles;
 
 
 
@@ -34,7 +34,7 @@ public class MeshCreator : MonoBehaviour
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
         mesh.name = "subdividedCube";
-        CreateCubeMesh();
+        GenerateMesh();
     }
 
     // Update is called once per frame
@@ -47,7 +47,7 @@ public class MeshCreator : MonoBehaviour
         UpdateMesh();
     }
 
-    void CreateCubeMesh()
+    public override void GenerateMesh()
     {
 
         //int cornerVertices = 8;
@@ -159,7 +159,7 @@ public class MeshCreator : MonoBehaviour
             }
         }
 
-        print(triangles.Count);
+        //print(triangles.Count);
 
         foreach (var tri in triangles)
         {
@@ -169,6 +169,7 @@ public class MeshCreator : MonoBehaviour
         }
 
         meshtriangles = holder.ToArray();
+        numOfVertices = meshvertices.Length;
         //meshvertices = new Vector3[]
         //{
         //    //front
@@ -212,14 +213,15 @@ public class MeshCreator : MonoBehaviour
 
         //};
 
-        
+
     }
 
-    private void UpdateMesh()
+    public override void UpdateMesh()
     {
         mesh.Clear();
         mesh.vertices = meshvertices;
         mesh.triangles = meshtriangles;
+        
         mesh.RecalculateNormals();
     }
 
@@ -228,7 +230,7 @@ public class MeshCreator : MonoBehaviour
         Gizmos.color = Color.blue;
         for (int i = 0; i < meshvertices.Length; i++)
         {
-            Gizmos.DrawSphere(vertices[i], 0.05f);
+            Gizmos.DrawSphere(meshvertices[i], 0.02f);
         }
 
         //Gizmos.color = Color.red;
