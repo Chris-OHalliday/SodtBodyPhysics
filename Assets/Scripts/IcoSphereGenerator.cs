@@ -8,28 +8,8 @@ public class IcoSphereGenerator : MeshClass
     [Range(0.0f, 100.0f)]
     public int subdivisionLevel;
 
-    //private struct TriangleIndices
-    //{
-    //    public int vertex1;
-    //    public int vertex2;
-    //    public int vertex3;
-
-    //    public TriangleIndices(int vertex1, int vertex2, int vertex3)
-    //    {
-    //        this.vertex1 = vertex1;
-    //        this.vertex2 = vertex2;
-    //        this.vertex3 = vertex3;
-    //    }
-    //}
-
-    Mesh mesh;
-    [SerializeField] private List<Vector3> vertices;
-    private List<TriangleIndices> triangles = new List<TriangleIndices>();
-    List<int> holder = new List<int>();
     private Dictionary<long, int> middlePointIndexDict = new Dictionary<long, int>();
     private int indexer = 0;
-    //public int[] meshtriangles;
-    //private Vector3[] meshvertices;
 
     // Start is called before the first frame update
     void Start()
@@ -38,7 +18,9 @@ public class IcoSphereGenerator : MeshClass
         GetComponent<MeshFilter>().mesh = mesh;
         mesh.name = "Icosphere";
         GenerateMesh();
-
+        RefineIcoSphere();
+        UpdateMesh();
+        FillJointArray();
     }
 
     // Update is called once per frame
@@ -128,7 +110,7 @@ public class IcoSphereGenerator : MeshClass
         triangles.Add(new TriangleIndices(8, 6, 7));
         triangles.Add(new TriangleIndices(9, 8, 1));
 
-        RefineIcoSphere();
+        
     }
 
     private void RefineIcoSphere()
@@ -164,10 +146,29 @@ public class IcoSphereGenerator : MeshClass
             holder.Add(triangle.vertex3);
         }
 
-        meshvertices = vertices.ToArray();
-        meshtriangles = holder.ToArray();
-        numOfVertices = meshvertices.Length;
+        for (int i = 0; i < vertices.Count; i++)
+        {
+            vertices[i] = vertices[i]/ 2;
+            vertices[i] += transform.localPosition;
+        }
 
+        meshvertices = vertices.ToArray();
+        //meshtriangles = holder.ToArray();
+        numOfVertices = vertices.Count;
+
+    }
+
+    public override void FillJointArray()
+    {
+        foreach (var item in triangles)
+        {
+            massPointIndexes.Add(item.vertex1);
+            massPointIndexes.Add(item.vertex2);
+            massPointIndexes.Add(item.vertex1);
+            massPointIndexes.Add(item.vertex3);
+            massPointIndexes.Add(item.vertex2);
+            massPointIndexes.Add(item.vertex3);
+        }
     }
 
     public override void UpdateMesh()
@@ -175,7 +176,15 @@ public class IcoSphereGenerator : MeshClass
 
         mesh.Clear();
         mesh.vertices = meshvertices;
-        mesh.triangles = meshtriangles;
+        mesh.triangles = holder.ToArray();
         mesh.RecalculateNormals();
+    }
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        for (int i = 0; i < massPointIndexes.Count - 1; i += 2)
+        {
+            Gizmos.DrawLine(meshvertices[massPointIndexes[i]], meshvertices[massPointIndexes[i + 1]]);
+        }
     }
 }

@@ -6,28 +6,12 @@ using UnityEngine;
 public class MeshCreator : MeshClass
 {
 
-    //private struct TriangleIndices
-    //{
-    //    public int vertex1;
-    //    public int vertex2;
-    //    public int vertex3;
-
-    //    public TriangleIndices(int vertex1, int vertex2, int vertex3)
-    //    {
-    //        this.vertex1 = vertex1;
-    //        this.vertex2 = vertex2;
-    //        this.vertex3 = vertex3;
-    //    }
-    //}
-
-    Mesh mesh;
-    [SerializeField] private List<Vector3> vertices;
-    private List<TriangleIndices> triangles = new List<TriangleIndices>();
-    List<int> holder = new List<int>();
-    //public Vector3[] meshvertices;
-    //int[] meshtriangles;
-
-
+    private int[] backsideNumArr = new int[25] {5,11,17,23,29, 41,47,53,59,65, 77,83,89,95,101, 113,119,125,131,137, 149,155,161,167,173};
+    private int[] rightsideNumArr = new int[25] {30,31,32,33,34, 66,67,68,69,70, 102,103,104,105,106, 138,139,140,141,142, 174,175,176,177,178};
+    private int[] topbackNumArr = new int[5] {185,191,197,203,209};
+    private int[] toprightsideNumArr = new int[5] {210,211,212,213,214};
+    private int[] backrightcornerArr = new int[5] {35,71,107,143,179};
+    private const int numOfCubeSubdivisions = 5;
 
     void Start()
     {
@@ -35,44 +19,44 @@ public class MeshCreator : MeshClass
         GetComponent<MeshFilter>().mesh = mesh;
         mesh.name = "subdividedCube";
         GenerateMesh();
+        UpdateMesh();
+        FillJointArray();
     }
 
     // Update is called once per frame
     void Update()
     {
-        //for (int i = 0; i < meshvertices.Length; i++)
-        //{
-        //    meshvertices[i] -= new Vector3(0, 0.2f, 0) * Time.deltaTime;
-        //}
         UpdateMesh();
     }
 
     public override void GenerateMesh()
     {
 
-        //int cornerVertices = 8;
-        //int edgeVertices = (CUBESIZE + CUBESIZE + CUBESIZE - 3) * 4;
+        meshvertices = new Vector3[(numOfCubeSubdivisions + 1) * (numOfCubeSubdivisions + 1) * (numOfCubeSubdivisions+ 1)];
+        numOfVertices = meshvertices.Length;
 
-        for (float y = 0f; y < 1.2f; y += 0.2f)
+        for (int i = 0, y = 0; y <= numOfCubeSubdivisions; y ++)
         {
             //print("y" + y);
-            for (float x = 0f; x < 1.2f; x += 0.2f)
+            for (int x = 0; x <= numOfCubeSubdivisions; x ++)
             {
                 //print("X" + x);
-                for (float z = 0f; z < 1.2f; z += 0.2f)
+                for (int z = 0; z <= numOfCubeSubdivisions; z ++)
                 {
-                    vertices.Add(new Vector3(x, y, z));
+                    //vertices.Add(new Vector3(x, y, z));
+                    meshvertices[i] = new Vector3(x,y,z) / (numOfCubeSubdivisions);
+                    i++;
                 }
             }
 
         }
 
-        meshvertices = vertices.ToArray();
+        //meshvertices = vertices.ToArray();
 
         int indexCounter = 0;
 
         //front
-        for (int i = 0; i < vertices.Count - 42; i+= 6)
+        for (int i = 0; i < meshvertices.Length - 42; i+= 6)
         {
             if (indexCounter == 5)
             {
@@ -89,7 +73,7 @@ public class MeshCreator : MeshClass
 
         int indexCounter2 = 0;
         //back
-        for (int i = 5; i < vertices.Count -42 ; i+=6)
+        for (int i = 5; i < meshvertices.Length -42 ; i+=6)
         {
             if (indexCounter2 == 5)
             {
@@ -105,7 +89,7 @@ public class MeshCreator : MeshClass
 
 
         //right
-        for (int i = 30; i < vertices.Count - 37; i+= 36)
+        for (int i = 30; i < meshvertices.Length - 37; i+= 36)
         {
             for (int j = i; j < i+5; j++)
             {
@@ -126,7 +110,6 @@ public class MeshCreator : MeshClass
             }
         }
 
-
         int indexCounter3 = 0;
         //bottom
         for (int i = 1; i < 31; i++)
@@ -145,7 +128,7 @@ public class MeshCreator : MeshClass
         
         int indexCounter4 = 0;
         //top
-        for (int i = 180; i < vertices.Count - 7; i++)
+        for (int i = 180; i < meshvertices.Length - 7; i++)
         {
             if (indexCounter4 == 5)
             {
@@ -168,63 +151,98 @@ public class MeshCreator : MeshClass
             holder.Add(tri.vertex3);
         }
 
-        meshtriangles = holder.ToArray();
-        numOfVertices = meshvertices.Length;
-        //meshvertices = new Vector3[]
-        //{
-        //    //front
-        //    new Vector3(0,0,0), //0
-        //    new Vector3(0,0.2f,0), //1
-        //    new Vector3(0.2f,0,0), //2 
-        //    new Vector3(0.2f,0.2f,0), //3
+    }
+    public override void FillJointArray()
+    {
+        for (int i = 0; i < meshvertices.Length; i++)
+        {
+            ArrangeJointArray(i);
+        }
+    }
 
-        //    //back
-        //    new Vector3(0,0,0.2f), //4 
-        //    new Vector3(0,0.2f,0.2f), //5
-        //    new Vector3(0.2f,0,0.2f), //6 
-        //    new Vector3(0.2f,0.2f,0.2f) //7
-        //};
-
-        //triangles = new int[]
-        //{ 
-        //    //front
-        //    0,1,2,
-        //    1,3,2,
-
-        //    //right
-        //    2,3,6,
-        //    3,7,6,
-
-        //    //back
-        //    6,7,4,
-        //    7,5,4,
-
-        //    //left
-        //    4,5,0,
-        //    5,1,0,
-
-        //    //top
-        //    1,5,3,
-        //    5,7,3,
-
-        //    //bottom
-        //    4,0,6,
-        //    0,2,6
-
-        //};
-
+    private void ArrangeJointArray(int index)
+    {
+        if (IsNuminArray(index,rightsideNumArr))
+        {
+            massPointIndexes.Add(index);
+            massPointIndexes.Add(index + 1);
+            massPointIndexes.Add(index);
+            massPointIndexes.Add(index + 36);
+            massPointIndexes.Add(index);
+            massPointIndexes.Add(index + 37);
+        }
+        else if (IsNuminArray(index,backsideNumArr))
+        {
+            massPointIndexes.Add(index);
+            massPointIndexes.Add(index + 6);
+            massPointIndexes.Add(index);
+            massPointIndexes.Add(index + 36);
+            massPointIndexes.Add(index);
+            massPointIndexes.Add(index + 42);
+        }
+        else if (IsNuminArray(index,toprightsideNumArr))
+        {
+            massPointIndexes.Add(index);
+            massPointIndexes.Add(index + 1);
+        }  
+        else if (IsNuminArray(index,topbackNumArr))
+        {
+            massPointIndexes.Add(index);
+            massPointIndexes.Add(index + 6);
+        }
+        else if (IsNuminArray(index,backrightcornerArr))
+        {
+            massPointIndexes.Add(index);
+            massPointIndexes.Add(index + 36);
+        }
+        else if (index >= 180 && index != 215 && !IsNuminArray(index,topbackNumArr) && !IsNuminArray(index,toprightsideNumArr))
+        {
+            massPointIndexes.Add(index);
+            massPointIndexes.Add(index + 1);
+            massPointIndexes.Add(index);
+            massPointIndexes.Add(index + 6);
+            massPointIndexes.Add(index);
+            massPointIndexes.Add(index + 7);
+        }
+        else
+        {
+            massPointIndexes.Add(index);
+            massPointIndexes.Add(index + 1);
+            massPointIndexes.Add(index);
+            massPointIndexes.Add(index + 6); 
+            massPointIndexes.Add(index);
+            massPointIndexes.Add(index + 7);
+            massPointIndexes.Add(index);
+            massPointIndexes.Add(index + 36);
+            massPointIndexes.Add(index);
+            massPointIndexes.Add(index + 37);
+            massPointIndexes.Add(index);
+            massPointIndexes.Add(index + 42);
+            massPointIndexes.Add(index);
+            massPointIndexes.Add(index + 43);
+        }
 
     }
 
     public override void UpdateMesh()
-    {
+    {     
         mesh.Clear();
         mesh.vertices = meshvertices;
-        mesh.triangles = meshtriangles;
-        
+        mesh.triangles = holder.ToArray();
         mesh.RecalculateNormals();
     }
-
+    
+    private bool IsNuminArray(int value, int[] arr)
+    {
+        foreach (int num in arr)
+        {
+            if (num.Equals(value))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.blue;
@@ -233,28 +251,5 @@ public class MeshCreator : MeshClass
             Gizmos.DrawSphere(meshvertices[i], 0.02f);
         }
 
-        //Gizmos.color = Color.red;
-        //for (int i = 0; i < meshtriangles.Length - 1 ; i++)
-        //{
-        //    Gizmos.DrawLine(vertices[meshtriangles[i]], meshvertices[meshtriangles[i+1]]);
-        //}
-
     }
 }
-
-
-//int indexCounter3 = 0;
-////right
-//for (int i = 30; i < vertices.Count - 37; i++)
-//{
-//    if (indexCounter3 == 5)
-//    {
-//        indexCounter3 = 0;
-//    }
-//    else
-//    {
-//        triangles.Add(new TriangleIndices(i, i + 36, i + 1));
-//        triangles.Add(new TriangleIndices(i + 36, i + 37, i + 1));
-//        indexCounter3++;
-//    }
-//}

@@ -4,61 +4,83 @@ using UnityEngine;
 
 public class MassPoint : MonoBehaviour
 {
-    
+
+    public struct MassPointObj
+    {
+        public Vector3 positionVector;
+        public Vector3 velocityVector;
+        public Vector3 forceVector;
+    };
+
     public MeshClass objectBody;
-    public Vector3[] velocityVector;
-    public Vector3[] forceVector;
+    //public List<SpringStruct> springs = new List<SpringStruct>();
+    public MassPointObj[] massPointObjs;
     public Vector3 gravityVector;
-    public Vector3[] positionVector;
-    bool meshesGenerated = false;
+    //public Vector3[] positionVectors;
+    public bool meshesGenerated = false;
     //public SpringJoint springJoint;
 
     [Range(0.0f, 1.0f)]
     public float mass = 1;
 
-    private void Start()
+    private void Awake()
     {
         if (GetComponent<MeshCreator>() != null)
         {
             objectBody = GetComponent<MeshCreator>();
         }
-        else 
-        { 
+        else
+        {
             objectBody = GetComponent<IcoSphereGenerator>();
         }
-        gravityVector = new Vector3(0, -0.1f, 0) * mass;
-        
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
+
+        gravityVector = new Vector3(0, -0.05f, 0) * mass;
+
         if (!meshesGenerated)
         {
             meshesGenerated = true;
             if (meshesGenerated)
             {
-                velocityVector = new Vector3[objectBody.numOfVertices];
-                positionVector = new Vector3[objectBody.numOfVertices];
-                forceVector = new Vector3[objectBody.numOfVertices];
+                massPointObjs = new MassPointObj[objectBody.numOfVertices];
+                for (int i = 0; i < objectBody.meshvertices.Length; i++)
+                {
+                    massPointObjs[i].positionVector = objectBody.meshvertices[i] + transform.parent.position;
+                    transform.localPosition = -(transform.parent.position);
+                }
             }
         }
 
-        for (int i = 0; i < objectBody.numOfVertices; i++)
-        {
-            positionVector[i] = objectBody.meshvertices[i];
-            forceVector[i] += gravityVector;
-            velocityVector[i] += forceVector[i] * (Time.deltaTime / mass);
-            positionVector[i] += velocityVector[i] * Time.deltaTime;
-            objectBody.meshvertices[i] = positionVector[i];           
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+        for (int i = 0; i < objectBody.meshvertices.Length; i++)
+        {       
+            massPointObjs[i].forceVector += gravityVector;
+            massPointObjs[i].velocityVector += massPointObjs[i].forceVector * (Time.deltaTime / mass);
+            massPointObjs[i].positionVector += massPointObjs[i].velocityVector * Time.deltaTime;
+            objectBody.meshvertices[i] = massPointObjs[i].positionVector;
+            if (massPointObjs[i].positionVector.y <= 0)
+            {
+
+                massPointObjs[i].velocityVector = Vector3.zero;
+            }
+
         }
+
     }
 
     private void LateUpdate()
     {
         for (int i = 0; i < objectBody.numOfVertices; i++)
         {
-            forceVector[i] = Vector3.zero;
+            massPointObjs[i].forceVector = Vector3.zero;
         }
     }
 
@@ -66,7 +88,7 @@ public class MassPoint : MonoBehaviour
     {
         for (int i = 0; i < 2 ; i++)
         {
-            forceVector[i] += force;
+            massPointObjs[i].forceVector += force;
         }
 
     }
@@ -74,10 +96,6 @@ public class MassPoint : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
-        for (int i = 0; i < positionVector.Length; i++)
-        {
-            Gizmos.DrawSphere(positionVector[i], 0.01f);
-        }
 
     }
 }
