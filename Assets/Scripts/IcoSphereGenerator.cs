@@ -20,6 +20,7 @@ public class IcoSphereGenerator : MeshClass
         GenerateMesh();
         RefineIcoSphere();
         UpdateMesh();
+        meshesGenerated = true;
         FillJointArray();
     }
 

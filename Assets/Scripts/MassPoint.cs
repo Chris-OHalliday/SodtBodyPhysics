@@ -10,6 +10,15 @@ public class MassPoint : MonoBehaviour
         public Vector3 positionVector;
         public Vector3 velocityVector;
         public Vector3 forceVector;
+
+        public void ApplyForce(Vector3 force)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                forceVector += force;
+            }
+
+        }
     };
 
     public MeshClass objectBody;
@@ -38,7 +47,7 @@ public class MassPoint : MonoBehaviour
     private void Start()
     {
 
-        gravityVector = new Vector3(0, -0.05f, 0) * mass;
+        gravityVector = new Vector3(0, -0.0f, 0) * mass;
 
         if (!meshesGenerated)
         {
@@ -57,20 +66,15 @@ public class MassPoint : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
 
         for (int i = 0; i < objectBody.meshvertices.Length; i++)
         {       
-            massPointObjs[i].forceVector += gravityVector;
+            massPointObjs[i].ApplyForce(gravityVector);
             massPointObjs[i].velocityVector += massPointObjs[i].forceVector * (Time.deltaTime / mass);
             massPointObjs[i].positionVector += massPointObjs[i].velocityVector * Time.deltaTime;
             objectBody.meshvertices[i] = massPointObjs[i].positionVector;
-            if (massPointObjs[i].positionVector.y <= 0)
-            {
-
-                massPointObjs[i].velocityVector = Vector3.zero;
-            }
 
         }
 
@@ -84,14 +88,6 @@ public class MassPoint : MonoBehaviour
         }
     }
 
-    public void ApplyForce(Vector3 force)
-    {
-        for (int i = 0; i < 2 ; i++)
-        {
-            massPointObjs[i].forceVector += force;
-        }
-
-    }
 
     private void OnDrawGizmos()
     {

@@ -18,9 +18,12 @@ public class MeshCreator : MeshClass
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
         mesh.name = "subdividedCube";
+        meshvertices = new Vector3[(numOfCubeSubdivisions + 1) * (numOfCubeSubdivisions + 1) * (numOfCubeSubdivisions + 1)];
+        numOfVertices = meshvertices.Length;
         GenerateMesh();
         UpdateMesh();
         FillJointArray();
+        meshesGenerated = true;
     }
 
     // Update is called once per frame
@@ -32,9 +35,6 @@ public class MeshCreator : MeshClass
     public override void GenerateMesh()
     {
 
-        meshvertices = new Vector3[(numOfCubeSubdivisions + 1) * (numOfCubeSubdivisions + 1) * (numOfCubeSubdivisions+ 1)];
-        numOfVertices = meshvertices.Length;
-
         for (int i = 0, y = 0; y <= numOfCubeSubdivisions; y ++)
         {
             //print("y" + y);
@@ -43,7 +43,6 @@ public class MeshCreator : MeshClass
                 //print("X" + x);
                 for (int z = 0; z <= numOfCubeSubdivisions; z ++)
                 {
-                    //vertices.Add(new Vector3(x, y, z));
                     meshvertices[i] = new Vector3(x,y,z) / (numOfCubeSubdivisions);
                     i++;
                 }
@@ -204,6 +203,10 @@ public class MeshCreator : MeshClass
             massPointIndexes.Add(index);
             massPointIndexes.Add(index + 7);
         }
+        else if(index == 215)
+        {
+            return;
+        }
         else
         {
             massPointIndexes.Add(index);
@@ -250,6 +253,11 @@ public class MeshCreator : MeshClass
         {
             Gizmos.DrawSphere(meshvertices[i], 0.02f);
         }
+        Gizmos.color = Color.green;
+        for (int i = 0; i < massPointIndexes.Count-1; i += 2)
+        {
 
+            Gizmos.DrawLine(meshvertices[massPointIndexes[i]], meshvertices[massPointIndexes[i + 1]]);
+        }
     }
 }

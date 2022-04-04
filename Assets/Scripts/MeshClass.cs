@@ -13,7 +13,7 @@ public abstract class MeshClass : MonoBehaviour
     public List<int> holder = new List<int>();
     public List<TriangleIndices> triangles = new List<TriangleIndices>();
     public List<Vector3> vertices;
-
+    public bool meshesGenerated = false;
     public abstract void GenerateMesh();
     public abstract void UpdateMesh();
     public abstract void FillJointArray();
