@@ -22,12 +22,18 @@ public class IcoSphereGenerator : MeshClass
         UpdateMesh();
         meshesGenerated = true;
         FillJointArray();
+
     }
 
     // Update is called once per frame
     void Update()
     {
         UpdateMesh();
+    }
+
+    private void LateUpdate()
+    {
+        
     }
 
     private int AddVertex(Vector3 newPoint)
@@ -67,9 +73,9 @@ public class IcoSphereGenerator : MeshClass
 
     public override void GenerateMesh()
     {
-        float t = (1.0f + Mathf.Sqrt(5.0f))/2.0f;
+        float t = (1.0f + Mathf.Sqrt(5.0f))* 0.5f;
 
-        AddVertex(new Vector3(-1, t, 0).normalized);
+        AddVertex(new Vector3(0, t, 0).normalized);
         AddVertex(new Vector3(1, t, 0).normalized);
         AddVertex(new Vector3(-1, -t, 0).normalized);
         AddVertex(new Vector3(1, -t, 0).normalized);
@@ -111,7 +117,6 @@ public class IcoSphereGenerator : MeshClass
         triangles.Add(new TriangleIndices(8, 6, 7));
         triangles.Add(new TriangleIndices(9, 8, 1));
 
-        
     }
 
     private void RefineIcoSphere()
@@ -154,9 +159,8 @@ public class IcoSphereGenerator : MeshClass
         }
 
         meshvertices = vertices.ToArray();
-        //meshtriangles = holder.ToArray();
         numOfVertices = vertices.Count;
-
+        //normals = CalcSurfaceNormals();
     }
 
     public override void FillJointArray()
@@ -180,6 +184,31 @@ public class IcoSphereGenerator : MeshClass
         mesh.triangles = holder.ToArray();
         mesh.RecalculateNormals();
     }
+
+    //public List<Vector3> CalcSurfaceNormals()
+    //{
+    //    List < Vector3 > surfaceNormals = new List<Vector3>(); 
+    //    foreach (var tri in triangles)
+    //    {
+    //        Vector3 normal = Vector3.Cross(meshvertices[tri.vertex1] - meshvertices[tri.vertex2], meshvertices[tri.vertex1] - meshvertices[tri.vertex3]).normalized;
+    //        surfaceNormals.Add(normal);
+    //    }
+    //    return surfaceNormals;
+    //}
+
+    public override bool CollisionCheck(MeshClass mesh1, MeshClass mesh2)
+    {
+
+        if ((mesh1.mesh.bounds.min.x <= mesh2.mesh.bounds.max.x && mesh1.mesh.bounds.max.x >= mesh2.mesh.bounds.min.x) && (mesh1.mesh.bounds.min.y <= mesh2.mesh.bounds.max.y && mesh1.mesh.bounds.max.y >= mesh2.mesh.bounds.min.y) && (mesh1.mesh.bounds.min.z <= mesh2.mesh.bounds.max.z && mesh1.mesh.bounds.max.z >= mesh2.mesh.bounds.min.z))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
@@ -187,5 +216,7 @@ public class IcoSphereGenerator : MeshClass
         {
             Gizmos.DrawLine(meshvertices[massPointIndexes[i]], meshvertices[massPointIndexes[i + 1]]);
         }
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(mesh.bounds.center, mesh.bounds.size);
     }
 }

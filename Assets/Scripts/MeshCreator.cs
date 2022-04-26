@@ -24,11 +24,13 @@ public class MeshCreator : MeshClass
         UpdateMesh();
         FillJointArray();
         meshesGenerated = true;
+        
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
+        print(mesh.bounds);
         UpdateMesh();
     }
 
@@ -49,8 +51,6 @@ public class MeshCreator : MeshClass
             }
 
         }
-
-        //meshvertices = vertices.ToArray();
 
         int indexCounter = 0;
 
@@ -161,7 +161,7 @@ public class MeshCreator : MeshClass
 
     private void ArrangeJointArray(int index)
     {
-        if (IsNuminArray(index,rightsideNumArr))
+        if (IsNuminArray(index, rightsideNumArr))
         {
             massPointIndexes.Add(index);
             massPointIndexes.Add(index + 1);
@@ -170,7 +170,7 @@ public class MeshCreator : MeshClass
             massPointIndexes.Add(index);
             massPointIndexes.Add(index + 37);
         }
-        else if (IsNuminArray(index,backsideNumArr))
+        else if (IsNuminArray(index, backsideNumArr))
         {
             massPointIndexes.Add(index);
             massPointIndexes.Add(index + 6);
@@ -179,22 +179,22 @@ public class MeshCreator : MeshClass
             massPointIndexes.Add(index);
             massPointIndexes.Add(index + 42);
         }
-        else if (IsNuminArray(index,toprightsideNumArr))
+        else if (IsNuminArray(index, toprightsideNumArr))
         {
             massPointIndexes.Add(index);
             massPointIndexes.Add(index + 1);
-        }  
-        else if (IsNuminArray(index,topbackNumArr))
+        }
+        else if (IsNuminArray(index, topbackNumArr))
         {
             massPointIndexes.Add(index);
             massPointIndexes.Add(index + 6);
         }
-        else if (IsNuminArray(index,backrightcornerArr))
+        else if (IsNuminArray(index, backrightcornerArr))
         {
             massPointIndexes.Add(index);
             massPointIndexes.Add(index + 36);
         }
-        else if (index >= 180 && index != 215 && !IsNuminArray(index,topbackNumArr) && !IsNuminArray(index,toprightsideNumArr))
+        else if (index >= 180 && index != 215 && !IsNuminArray(index, topbackNumArr) && !IsNuminArray(index, toprightsideNumArr))
         {
             massPointIndexes.Add(index);
             massPointIndexes.Add(index + 1);
@@ -203,7 +203,7 @@ public class MeshCreator : MeshClass
             massPointIndexes.Add(index);
             massPointIndexes.Add(index + 7);
         }
-        else if(index == 215)
+        else if (index == 215)
         {
             return;
         }
@@ -212,7 +212,7 @@ public class MeshCreator : MeshClass
             massPointIndexes.Add(index);
             massPointIndexes.Add(index + 1);
             massPointIndexes.Add(index);
-            massPointIndexes.Add(index + 6); 
+            massPointIndexes.Add(index + 6);
             massPointIndexes.Add(index);
             massPointIndexes.Add(index + 7);
             massPointIndexes.Add(index);
@@ -226,6 +226,7 @@ public class MeshCreator : MeshClass
         }
 
     }
+
 
     public override void UpdateMesh()
     {     
@@ -246,6 +247,20 @@ public class MeshCreator : MeshClass
         }
         return false;
     }
+
+    public override bool CollisionCheck(MeshClass mesh1, MeshClass mesh2)
+    {
+
+        if ((mesh1.mesh.bounds.min.x <= mesh2.mesh.bounds.max.x && mesh1.mesh.bounds.max.x >= mesh2.mesh.bounds.min.x) && (mesh1.mesh.bounds.min.y <= mesh2.mesh.bounds.max.y && mesh1.mesh.bounds.max.y >= mesh2.mesh.bounds.min.y) && (mesh1.mesh.bounds.min.z <= mesh2.mesh.bounds.max.z && mesh1.mesh.bounds.max.z >= mesh2.mesh.bounds.min.z))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.blue;
@@ -253,11 +268,14 @@ public class MeshCreator : MeshClass
         {
             Gizmos.DrawSphere(meshvertices[i], 0.02f);
         }
-        Gizmos.color = Color.green;
-        for (int i = 0; i < massPointIndexes.Count-1; i += 2)
-        {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(mesh.bounds.center, mesh.bounds.size);
+        //Gizmos.color = Color.green;
+        //for (int i = 0; i < massPointIndexes.Count-1; i += 2)
+        //{
 
-            Gizmos.DrawLine(meshvertices[massPointIndexes[i]], meshvertices[massPointIndexes[i + 1]]);
-        }
+        //    Gizmos.DrawLine(meshvertices[massPointIndexes[i]], meshvertices[massPointIndexes[i + 1]]);
+        //}
     }
+
 }
