@@ -14,14 +14,13 @@ public abstract class MeshClass : MonoBehaviour
     public List<Vector3> vertices;
     public List<Vector3> normals;
     public bool meshesGenerated = false;
-    public Bounds bounds;
     public float volume;
     public float surfaceArea;
 
     public abstract void GenerateMesh();
     public abstract void UpdateMesh();
     public abstract void FillJointArray();
-    public abstract bool CollisionCheck(MeshClass mesh1, MeshClass mesh2);
+    public abstract bool CollisionCheck(MeshClass mesh2);
 
 
     public struct TriangleIndices

@@ -177,12 +177,9 @@ MonoBehaviour:
   vertices: []
   normals: []
   meshesGenerated: 0
-  bounds:
-    m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 0, y: 0, z: 0}
   volume: 0
   surfaceArea: 0
-  subdivisionLevel: 4
+  subdivisionLevel: 3
 --- !u!23 &2710043
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -247,7 +244,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   floor: {fileID: 1451552679}
   objectBody: {fileID: 0}
-  gravityVector: {x: 0, y: 0, z: 0}
+  gravityVector: {x: 0, y: 0.5, z: 0}
   mass: 1
   objectManager: {fileID: 1605972178}
 --- !u!1 &148300695
@@ -290,9 +287,6 @@ MonoBehaviour:
   vertices: []
   normals: []
   meshesGenerated: 0
-  bounds:
-    m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 0, y: 0, z: 0}
   volume: 0
   surfaceArea: 0
 --- !u!23 &148300697
@@ -373,7 +367,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   floor: {fileID: 1451552679}
   objectBody: {fileID: 0}
-  gravityVector: {x: 0, y: 0, z: 0}
+  gravityVector: {x: 0, y: -0.7, z: 0}
   mass: 1
   objectManager: {fileID: 1605972178}
 --- !u!1 &490987677
@@ -400,7 +394,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 490987677}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.5, y: 1, z: 0}
+  m_LocalPosition: {x: -0.75, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2710041}
@@ -857,7 +851,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1741985360}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.25, y: 1, z: 0}
+  m_LocalPosition: {x: -0.5, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 148300699}

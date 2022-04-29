@@ -9,6 +9,17 @@ public class MassSpring : MonoBehaviour
         public Vector3 positionVector;
         public Vector3 velocityVector;
         public Vector3 forceVector;
+        public bool pressureAdded;
+
+        public bool CollisionDepthCheck(Bounds bounds)
+        {
+            if (bounds.Contains(positionVector))
+            {
+                return true;
+            }
+            return false;
+        }
+
     };
     public struct LinearSpring
     {
@@ -18,7 +29,7 @@ public class MassSpring : MonoBehaviour
     };
 
     private const float R = 8.31446261815324f;
-    private const float T = 10f;
+    private const float T = 20f;
     private const float n = 1.0f;
 
     public GameObject floor;
@@ -35,7 +46,7 @@ public class MassSpring : MonoBehaviour
 
     private void Start()
     {
-        gravityVector = new Vector3(0.0f,-9.8f,0.0f);
+        //gravityVector = new Vector3(0.0f,-0.0f,0.0f);
         if (GetComponent<MeshCreator>() != null)
         {
             objectBody = GetComponent<MeshCreator>();
@@ -52,6 +63,7 @@ public class MassSpring : MonoBehaviour
             {                   
                 objectBody.meshvertices[i] += transform.parent.position;
                 massPointObjs[i].positionVector = objectBody.meshvertices[i];
+                massPointObjs[i].pressureAdded = false;
                 transform.localPosition = -(transform.parent.position);
             }
         }
@@ -88,8 +100,6 @@ public class MassSpring : MonoBehaviour
         {
             print("im an icosphere this is my volume " + objectBody.volume);
             objectBody.surfaceArea = (Mathf.Pow(Mathf.PI,0.333f)) * (Mathf.Pow((6 * objectBody.volume),0.666f));
-
-            
         }
 
     }
@@ -118,11 +128,21 @@ public class MassSpring : MonoBehaviour
                 //print(pressureVec);
                 Vector3 pressureForce = pressureVec * facefield;
                 //print(pressureForce);
-
-                massPointObjs[triangle.vertex1].forceVector += pressureForce;
-                massPointObjs[triangle.vertex2].forceVector += pressureForce;
-                massPointObjs[triangle.vertex3].forceVector += pressureForce;
-                               
+                if (!massPointObjs[triangle.vertex1].pressureAdded)
+                {
+                    massPointObjs[triangle.vertex1].forceVector += pressureForce;
+                    massPointObjs[triangle.vertex1].pressureAdded = true;
+                }
+                if (!massPointObjs[triangle.vertex2].pressureAdded)
+                {
+                    massPointObjs[triangle.vertex2].forceVector += pressureForce;
+                    massPointObjs[triangle.vertex2].pressureAdded = true;
+                } 
+                if (!massPointObjs[triangle.vertex3].pressureAdded)
+                {
+                    massPointObjs[triangle.vertex3].forceVector += pressureForce;
+                    massPointObjs[triangle.vertex3].pressureAdded = true;
+                }                      
             }
 
         }
@@ -146,9 +166,58 @@ public class MassSpring : MonoBehaviour
 
                 massPointObjs[linearSprings[i].pointIndexI].forceVector += totalSpringForce * (massPointVectorDiff.normalized);
                 massPointObjs[linearSprings[i].pointIndexJ].forceVector += -(totalSpringForce * (massPointVectorDiff.normalized));
-
             }
+        }
 
+        if (objectBody is IcoSphereGenerator)
+        {
+            if (objectBody.CollisionCheck(objectManager.sceneObjs[1]))
+            {
+                for (int i = 0; i < massPointObjs.Length; i++)
+                {
+                    if (massPointObjs[i].CollisionDepthCheck(objectManager.sceneObjs[1].mesh.bounds))
+                    {
+                        Ray ray = new Ray(massPointObjs[i].positionVector, -(massPointObjs[i].velocityVector));
+                        float distance = 0;
+                        if (objectManager.sceneObjs[1].mesh.bounds.IntersectRay(ray, out distance))
+                        {
+                            Debug.DrawRay(ray.origin, ray.direction * distance, Color.yellow);
+                            if (distance != Mathf.Infinity && distance != 0)
+                            {
+                                Vector3 intersectionPoint = ray.origin + (ray.direction * -distance);
+                                Vector3 PushOutForce = 10f * (intersectionPoint - massPointObjs[i].positionVector);
+                                print(PushOutForce);
+                                massPointObjs[i].forceVector += PushOutForce;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (objectBody is MeshCreator)
+        {
+            if (objectBody.CollisionCheck(objectManager.sceneObjs[0]))
+            {
+                for (int i = 0; i < massPointObjs.Length; i++)
+                {
+                    if (massPointObjs[i].CollisionDepthCheck(objectManager.sceneObjs[1].mesh.bounds))
+                    {
+                        Ray ray = new Ray(massPointObjs[i].positionVector, -(massPointObjs[i].velocityVector));
+                        float distance = 0;
+                        if (objectManager.sceneObjs[0].mesh.bounds.IntersectRay(ray, out distance))
+                        {
+                            Debug.DrawRay(ray.origin, ray.direction * distance, Color.yellow);
+                            if (distance != Mathf.Infinity && distance != 0)
+                            {
+                                Vector3 intersectionPoint = ray.origin + (ray.direction * -distance);
+                                Vector3 PushOutForce = 1.5f * (intersectionPoint - massPointObjs[i].positionVector);
+                                print(PushOutForce);
+                                massPointObjs[i].forceVector += PushOutForce;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         for (int i = 0; i < objectBody.meshvertices.Length; i++)
@@ -159,6 +228,7 @@ public class MassSpring : MonoBehaviour
 
             objectBody.meshvertices[i] = massPointObjs[i].positionVector;
         }
+
     }
 
     private void LateUpdate()
@@ -166,6 +236,7 @@ public class MassSpring : MonoBehaviour
         for (int i = 0; i < objectBody.meshvertices.Length; i++)
         {
             massPointObjs[i].forceVector = Vector3.zero;
+            massPointObjs[i].pressureAdded = false;
         }
     }
 

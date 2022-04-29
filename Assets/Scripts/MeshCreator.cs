@@ -30,7 +30,7 @@ public class MeshCreator : MeshClass
     // Update is called once per frame
     void LateUpdate()
     {
-        print(mesh.bounds);
+        //print(mesh.bounds);
         UpdateMesh();
     }
 
@@ -248,10 +248,10 @@ public class MeshCreator : MeshClass
         return false;
     }
 
-    public override bool CollisionCheck(MeshClass mesh1, MeshClass mesh2)
+    public override bool CollisionCheck(MeshClass mesh2)
     {
 
-        if ((mesh1.mesh.bounds.min.x <= mesh2.mesh.bounds.max.x && mesh1.mesh.bounds.max.x >= mesh2.mesh.bounds.min.x) && (mesh1.mesh.bounds.min.y <= mesh2.mesh.bounds.max.y && mesh1.mesh.bounds.max.y >= mesh2.mesh.bounds.min.y) && (mesh1.mesh.bounds.min.z <= mesh2.mesh.bounds.max.z && mesh1.mesh.bounds.max.z >= mesh2.mesh.bounds.min.z))
+        if ((mesh.bounds.min.x <= mesh2.mesh.bounds.max.x && mesh.bounds.max.x >= mesh2.mesh.bounds.min.x) && (mesh.bounds.min.y <= mesh2.mesh.bounds.max.y && mesh.bounds.max.y >= mesh2.mesh.bounds.min.y) && (mesh.bounds.min.z <= mesh2.mesh.bounds.max.z && mesh.bounds.max.z >= mesh2.mesh.bounds.min.z))
         {
             return true;
         }

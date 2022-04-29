@@ -12,7 +12,7 @@ public class IcoSphereGenerator : MeshClass
     private int indexer = 0;
 
     // Start is called before the first frame update
-    void Start()
+    void Start()    
     {
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
@@ -185,21 +185,10 @@ public class IcoSphereGenerator : MeshClass
         mesh.RecalculateNormals();
     }
 
-    //public List<Vector3> CalcSurfaceNormals()
-    //{
-    //    List < Vector3 > surfaceNormals = new List<Vector3>(); 
-    //    foreach (var tri in triangles)
-    //    {
-    //        Vector3 normal = Vector3.Cross(meshvertices[tri.vertex1] - meshvertices[tri.vertex2], meshvertices[tri.vertex1] - meshvertices[tri.vertex3]).normalized;
-    //        surfaceNormals.Add(normal);
-    //    }
-    //    return surfaceNormals;
-    //}
-
-    public override bool CollisionCheck(MeshClass mesh1, MeshClass mesh2)
+    public override bool CollisionCheck(MeshClass mesh2)
     {
 
-        if ((mesh1.mesh.bounds.min.x <= mesh2.mesh.bounds.max.x && mesh1.mesh.bounds.max.x >= mesh2.mesh.bounds.min.x) && (mesh1.mesh.bounds.min.y <= mesh2.mesh.bounds.max.y && mesh1.mesh.bounds.max.y >= mesh2.mesh.bounds.min.y) && (mesh1.mesh.bounds.min.z <= mesh2.mesh.bounds.max.z && mesh1.mesh.bounds.max.z >= mesh2.mesh.bounds.min.z))
+        if ((mesh.bounds.min.x <= mesh2.mesh.bounds.max.x && mesh.bounds.max.x >= mesh2.mesh.bounds.min.x) && (mesh.bounds.min.y <= mesh2.mesh.bounds.max.y && mesh.bounds.max.y >= mesh2.mesh.bounds.min.y) && (mesh.bounds.min.z <= mesh2.mesh.bounds.max.z && mesh.bounds.max.z >= mesh2.mesh.bounds.min.z))
         {
             return true;
         }
