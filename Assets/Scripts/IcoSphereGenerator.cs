@@ -31,11 +31,6 @@ public class IcoSphereGenerator : MeshClass
         UpdateMesh();
     }
 
-    private void LateUpdate()
-    {
-        
-    }
-
     private int AddVertex(Vector3 newPoint)
     {
         vertices.Add(newPoint);
@@ -196,7 +191,7 @@ public class IcoSphereGenerator : MeshClass
         {
             return false;
         }
-    }
+    }    
 
     private void OnDrawGizmos()
     {

@@ -41,7 +41,7 @@ public class MassSpring : MonoBehaviour
     
     private float pressure;
     private float springStiffness = 80.0f;
-    private float springDampingFactor = 0.6f;
+    private float springDampingFactor = 0.3f;
     public ObjectManager objectManager;
 
     private void Start()
@@ -104,7 +104,7 @@ public class MassSpring : MonoBehaviour
 
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         //massPointObjs[0].forceVector += -(Vector3.one * 5);
         //massPointObjs[massPointObjs.Length - 1].forceVector += (Vector3.one * 5);
@@ -169,50 +169,55 @@ public class MassSpring : MonoBehaviour
             }
         }
 
-        if (objectBody is IcoSphereGenerator)
+        for (int j = 0; j < objectManager.sceneObjs.Length; j++)
         {
-            if (objectBody.CollisionCheck(objectManager.sceneObjs[1]))
+
+            if (objectBody is IcoSphereGenerator)
             {
-                for (int i = 0; i < massPointObjs.Length; i++)
+                if (objectBody.CollisionCheck(objectManager.sceneObjs[j]) && objectBody != objectManager.sceneObjs[j])
                 {
-                    if (massPointObjs[i].CollisionDepthCheck(objectManager.sceneObjs[1].mesh.bounds))
+                    for (int i = 0; i < massPointObjs.Length; i++)
                     {
-                        Ray ray = new Ray(massPointObjs[i].positionVector, -(massPointObjs[i].velocityVector));
-                        float distance = 0;
-                        if (objectManager.sceneObjs[1].mesh.bounds.IntersectRay(ray, out distance))
+                        if (massPointObjs[i].CollisionDepthCheck(objectManager.sceneObjs[1].mesh.bounds) && massPointObjs[i].velocityVector != Vector3.zero)
                         {
-                            Debug.DrawRay(ray.origin, ray.direction * distance, Color.yellow);
-                            if (distance != Mathf.Infinity && distance != 0)
+                            Ray ray = new Ray(massPointObjs[i].positionVector, -(massPointObjs[i].velocityVector));
+                            float distance = 0;
+                            if (objectManager.sceneObjs[1].mesh.bounds.IntersectRay(ray, out distance))
+                            if (objectManager.sceneObjs[1].mesh.bounds.IntersectRay(ray, out distance))
                             {
-                                Vector3 intersectionPoint = ray.origin + (ray.direction * -distance);
-                                Vector3 PushOutForce = 10f * (intersectionPoint - massPointObjs[i].positionVector);
-                                print(PushOutForce);
-                                massPointObjs[i].forceVector += PushOutForce;
+                               //Debug.DrawRay(ray.origin, ray.direction * distance, Color.yellow);
+                                if (distance != Mathf.Infinity && distance != 0)
+                                {
+                                    Vector3 intersectionPoint = ray.origin + (ray.direction * -distance);
+                                    Vector3 PushOutForce = 12f * (intersectionPoint - massPointObjs[i].positionVector);
+                                   //print(PushOutForce);
+                                    massPointObjs[i].forceVector += PushOutForce;                                   
+                                }
                             }
                         }
                     }
                 }
             }
-        }
-        if (objectBody is MeshCreator)
-        {
-            if (objectBody.CollisionCheck(objectManager.sceneObjs[0]))
+            if (objectBody is MeshCreator)
             {
-                for (int i = 0; i < massPointObjs.Length; i++)
+                if (objectBody.CollisionCheck(objectManager.sceneObjs[j]) && objectBody != objectManager.sceneObjs[j])
                 {
-                    if (massPointObjs[i].CollisionDepthCheck(objectManager.sceneObjs[1].mesh.bounds))
+                    for (int i = 0; i < massPointObjs.Length; i++)
                     {
-                        Ray ray = new Ray(massPointObjs[i].positionVector, -(massPointObjs[i].velocityVector));
-                        float distance = 0;
-                        if (objectManager.sceneObjs[0].mesh.bounds.IntersectRay(ray, out distance))
+                        if (massPointObjs[i].CollisionDepthCheck(objectManager.sceneObjs[1].mesh.bounds) && massPointObjs[i].velocityVector != Vector3.zero)
                         {
-                            Debug.DrawRay(ray.origin, ray.direction * distance, Color.yellow);
-                            if (distance != Mathf.Infinity && distance != 0)
+                            Ray ray = new Ray(massPointObjs[i].positionVector, -(massPointObjs[i].velocityVector));
+                            float distance = 0;
+                            if (objectManager.sceneObjs[0].mesh.bounds.IntersectRay(ray, out distance))
                             {
-                                Vector3 intersectionPoint = ray.origin + (ray.direction * -distance);
-                                Vector3 PushOutForce = 1.5f * (intersectionPoint - massPointObjs[i].positionVector);
-                                print(PushOutForce);
-                                massPointObjs[i].forceVector += PushOutForce;
+                                //Debug.DrawRay(ray.origin, ray.direction * distance, Color.yellow);
+                                if (distance != Mathf.Infinity && distance != 0)
+                                {
+                                    Vector3 intersectionPoint = ray.origin + (ray.direction * -distance);
+                                    Vector3 PushOutForce = 1.2f * (intersectionPoint - massPointObjs[i].positionVector);
+                                    //print(PushOutForce);
+                                    massPointObjs[i].forceVector += PushOutForce;
+                                }
                             }
                         }
                     }
@@ -220,11 +225,13 @@ public class MassSpring : MonoBehaviour
             }
         }
 
+
+
         for (int i = 0; i < objectBody.meshvertices.Length; i++)
         {
-            massPointObjs[i].velocityVector += massPointObjs[i].forceVector * Time.deltaTime;
+            massPointObjs[i].velocityVector += massPointObjs[i].forceVector * Time.fixedDeltaTime;
            
-            massPointObjs[i].positionVector = massPointObjs[i].positionVector + massPointObjs[i].velocityVector * Time.deltaTime;
+            massPointObjs[i].positionVector = massPointObjs[i].positionVector + massPointObjs[i].velocityVector * Time.fixedDeltaTime;
 
             objectBody.meshvertices[i] = massPointObjs[i].positionVector;
         }

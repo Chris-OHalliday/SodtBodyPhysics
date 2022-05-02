@@ -21,8 +21,7 @@ public abstract class MeshClass : MonoBehaviour
     public abstract void UpdateMesh();
     public abstract void FillJointArray();
     public abstract bool CollisionCheck(MeshClass mesh2);
-
-
+  
     public struct TriangleIndices
     {
         public int vertex1;

@@ -12,14 +12,19 @@ public class volume : MonoBehaviour
     {
         mesh = GetComponent<MeshFilter>().mesh;
 
-        float result = 0;
-        for (int i = 0; i < mesh.triangles.Length; i+= 3)
-        {
-            result += (Vector3.Cross(mesh.vertices[mesh.triangles[i+1]] - mesh.vertices[mesh.triangles[i]], mesh.vertices[mesh.triangles[i + 2]]- mesh.vertices[mesh.triangles[i]])).magnitude;
-        }
+        //float result = 0;
+        //for (int i = 0; i < mesh.triangles.Length; i+= 3)
+        //{
+        //    result += (Vector3.Cross(mesh.vertices[mesh.triangles[i+1]] - mesh.vertices[mesh.triangles[i]], mesh.vertices[mesh.triangles[i + 2]]- mesh.vertices[mesh.triangles[i]])).magnitude;
+        //}
 
-        print(" result " + result);
+        //print(" result " + result);
     }
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(mesh.bounds.center, mesh.bounds.size);
+    }
 
 }
